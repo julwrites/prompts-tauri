@@ -57,16 +57,7 @@ The Prompts TUI will be built in Rust using the Ratatui library. It will be an i
 
 | Story ID | User Story | Acceptance Criteria | Priority |
 |---|---|---|---|
-| **US-001** | As a developer, I want the CLI to automatically manage where my prompts are stored so I don't have to think about it. | The CLI uses a default, user-specific directory (e.g., `~/.config/prompts-cli`). The user can override this with a `--config` flag. | P0 |
-| **US-002** | As a developer, I want to add prompts without having to name them, and the tool should handle duplicates. | A prompt's content is hashed to create a unique ID. Adding an existing prompt is a no-op. | P0 |
-| **US-003** | As a developer, I want to quickly find a prompt even if I only remember parts of it. | Commands that need to identify a prompt use a fuzzy search on the prompt text. | P0 |
-| **US-004** | As a developer, I want to either provide a prompt directly in a command or have the CLI ask me for it. | Commands like `add`, `show`, `edit`, `delete` support both a one-shot mode (prompt in args) and an interactive mode (reads from stdin). | P1 |
-| **US-005** | As a developer, when my fuzzy search returns multiple results, I want the CLI to show me the options so I can choose the correct one. | The CLI returns a structured JSON list of matching prompts, including their text and hash, for the user to make a specific choice. | P1 |
-| US-006 | As a terminal user, I want a TUI to browse and manage prompts interactively. | Responsive Ratatui interface with keyboard navigation. | P1 |
 | US-007 | As a desktop app user, I want a user-friendly UI for managing prompts with drag & drop and rich controls. | Tauri app with native integrations and a smoother UX. | P1 |
-| US-010 | As a TUI user, I want to see a list of my prompts with their titles and tags. | A scrollable list of prompts is displayed on launch. | P1 |
-| US-011 | As a TUI user, I want to be able to select a prompt and view its full content. | A dedicated view shows the full text of the selected prompt. | P1 |
-| US-012 | As a TUI user, I want to be able to edit a prompt's content and metadata directly within the interface. | An editing mode allows for in-place modification of prompts. | P1 |
 | US-013 | As a desktop user, I want to be able to use my mouse to navigate the application and interact with my prompts. | The application is fully navigable with a mouse. | P1 |
 | US-014 | As a desktop user, I want to receive native notifications for certain events (e.g., when a prompt is successfully saved). | The application uses the OS's native notification system. | P1 |
 | US-015 | As a desktop user, I want to be able to customize the application's appearance (e.g., with a light or dark theme). | The application provides theme customization options. | P2 |
@@ -78,43 +69,10 @@ The Prompts TUI will be built in Rust using the Ratatui library. It will be an i
 
 ## Technical Architecture
 
-The CLI will be built in Rust. Key libraries will include:
-- **Clap**: For command-line argument parsing.
-- **Directories**: For finding the appropriate user-specific storage location on different operating systems.
-- **Sha2**: for hashing prompt content to create a unique ID.
-- **Fuzzy-matcher**: For implementing fuzzy search.
-- **Serde**: For serializing and deserializing prompt data.
-
-Prompts will be stored as individual JSON files in a dedicated directory. The filename for each prompt will be the SHA256 hash of its content.
-
-The TUI will be built in Rust using the Ratatui and Crossterm libraries. It will be a module within the `prompts-cli` crate and will share the same core logic for prompt management.
-
 The desktop application will be built using the Tauri framework. The frontend will be a single-page application (SPA) built with a modern web framework like React or Vue. The backend will be written in Rust and will be responsible for all the core prompt management logic.
 
 ## Feature Specification
 
-- **Storage:**
-    - **Default Location:** The tool will use a default directory (e.g., `~/.config/prompts-cli/prompts`).
-    - **Custom Location:** A `--config` global flag will allow users to specify an alternative storage directory.
-    - **Content-Addressable:** Prompts are stored in files named by the SHA256 hash of their content.
-- **Commands:**
-    - `add [PROMPT_TEXT]`: Adds a new prompt. If `PROMPT_TEXT` is not provided, it reads from stdin.
-    - `list`: Lists all stored prompts, showing a snippet and their hash.
-    - `show [FUZZY_QUERY]`: Searches for a prompt. If multiple are found, returns a JSON list. If one is found, it's displayed. If `FUZZY_QUERY` is not provided, it reads from stdin.
-    - `edit [FUZZY_QUERY]`: Same search mechanism as `show`. If a single prompt is identified, it opens it for editing (e.g., in the user's `$EDITOR`).
-    - `delete [FUZZY_QUERY]`: Same search mechanism as `show`. Deletes the identified prompt after confirmation.
-    - `generate [FUZZY_QUERY]`: Same search mechanism as `show`. Generates text based on the identified prompt.
-- **Fuzzy Search:**
-    - Implemented for `show`, `edit`, `delete`, and `generate`.
-    - Matches against the text of the prompts.
-    - If multiple matches are found, outputs a JSON array of objects, where each object contains the prompt text and its hash.
-- **Prompt Metadata:**
-    - The `Prompt` struct will contain the prompt text, tags, and categories. The hash is used as the external identifier.
-- **Interactive Prompt List**: A scrollable and filterable list of all prompts.
-- **Prompt Content View**: A detailed view of the selected prompt's content and metadata.
-- **In-TUI Editing**: The ability to edit prompts directly within the TUI.
-- **Keyboard-driven Navigation**: Intuitive keybindings for all actions.
-- **Help and Documentation**: A help screen that explains the keybindings and features.
 - **Graphical Prompt Management**: All the core CRUD, search, and filtering features will be available through a user-friendly GUI.
 - **Rich Text Editing**: A "what you see is what you get" (WYSIWYG) editor or a code editor with syntax highlighting for editing prompts.
 - **Drag and Drop**: The ability to drag and drop prompts to reorder them or organize them into folders.
@@ -142,6 +100,6 @@ The desktop application will be built using the Tauri framework. The frontend wi
 
 ## Out of Scope for v2
 
-- GUI or TUI interfaces.
 - Syncing prompts across devices.
 - Advanced versioning of prompts.
+- Automatic syncing of prompts between devices.
